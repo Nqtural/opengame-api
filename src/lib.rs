@@ -1,7 +1,7 @@
 use crate::routes::{
     auth::{
         login::{__path_login, LoginErrorResponse, LoginSuccessResponse},
-        register::{__path_register, RegisterStatus},
+        register::{__path_register, RegisterErrorResponse, RegisterSuccessResponse},
         status::{__path_status, LoggedInStatus},
     },
     status::health::{__path_health, Health},
@@ -14,7 +14,8 @@ use utoipa::OpenApi;
     components(schemas(
         LoginSuccessResponse,
         LoginErrorResponse,
-        RegisterStatus,
+        RegisterSuccessResponse,
+        RegisterErrorResponse,
         LoggedInStatus,
         Health,
     ))
