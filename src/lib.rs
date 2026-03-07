@@ -1,7 +1,7 @@
 use utoipa::OpenApi;
 use crate::routes::{
-    status::health::*,
-    auth::status::*,
+    status::health::{__path_health, Health},
+    auth::status::{__path_status, LoggedInStatus},
 };
 
 #[derive(OpenApi)]
@@ -10,3 +10,4 @@ pub struct ApiDoc;
 
 pub mod app;
 pub mod routes;
+pub mod storage;

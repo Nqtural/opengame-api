@@ -15,5 +15,7 @@ pub struct LoggedInStatus {
     )
 )]
 pub async fn status() -> Json<LoggedInStatus> {
-    Json(LoggedInStatus { status: "logged out" })
+    Json(LoggedInStatus {
+        status: "logged out",
+    })
 }
