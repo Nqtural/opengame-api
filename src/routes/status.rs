@@ -3,7 +3,7 @@ use axum::{Router, routing::get};
 use serde::Serialize;
 use utoipa::ToSchema;
 
-pub fn routes() -> Router {
+pub fn status() -> Router {
     Router::new().route("/health", get(health))
 }
 
