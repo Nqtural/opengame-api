@@ -1,4 +1,4 @@
-use crate::storage::types::{NewUser, User};
+use crate::storage::types::{RegisterRequest, User};
 use crate::storage::{NewUserStatus, Storage};
 use axum::Json;
 use axum::extract::State;
@@ -18,7 +18,7 @@ pub struct RegisterStatus {
 #[utoipa::path(
     post,
     path = "/auth/register",
-    request_body = NewUser,
+    request_body = RegisterRequest,
     responses(
         (status = 200, description = "User registered successfully", body = RegisterStatus),
         (status = 409, description = "Username taken", body = RegisterStatus),
@@ -27,7 +27,7 @@ pub struct RegisterStatus {
 )]
 pub async fn register(
     State(storage): State<Arc<dyn Storage>>,
-    Json(user): Json<NewUser>,
+    Json(user): Json<RegisterRequest>,
 ) -> (StatusCode, Json<RegisterStatus>) {
     let password_hash = match hash(user.password, DEFAULT_COST) {
         Ok(hash) => hash,
