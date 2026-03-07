@@ -1,4 +1,5 @@
 use anyhow::Result;
+use async_trait::async_trait;
 use axum::body::Body;
 use axum::body::to_bytes;
 use axum::http::Request;
@@ -7,10 +8,16 @@ use opengame_api::app::app;
 use opengame_api::storage;
 use serde_json::Value;
 use std::sync::Arc;
+use storage::types::User;
 use tower::ServiceExt;
 
 struct TestStorage;
+
+#[async_trait]
 impl storage::Storage for TestStorage {
+    async fn new_user(&self, _user: User) -> Result<storage::NewUserStatus> {
+        Ok(storage::NewUserStatus::Success)
+    }
 }
 
 #[tokio::test]

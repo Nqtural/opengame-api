@@ -1,5 +1,8 @@
 use crate::storage::Storage;
-use axum::{Router, routing::get};
+use axum::{
+    Router,
+    routing::{get, post},
+};
 use std::sync::Arc;
 
 pub mod login;
@@ -9,7 +12,7 @@ pub mod status;
 pub fn auth(storage: Arc<dyn Storage>) -> Router {
     Router::new()
         .route("/login", get(login::login))
-        .route("/register", get(register::register))
+        .route("/register", post(register::register))
         .route("/status", get(status::status))
         .with_state(storage)
 }
