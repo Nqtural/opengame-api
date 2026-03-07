@@ -5,4 +5,5 @@ use crate::routes::status::*;
 #[openapi(paths(health), components(schemas(Health)))]
 pub struct ApiDoc;
 
+pub mod app;
 pub mod routes;

@@ -1,10 +1,10 @@
-use axum::{Router, serve};
+use axum::serve;
 use tokio::net::TcpListener;
-use opengame_api::routes;
+use opengame_api::app::app;
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().nest("/status", routes::status::routes());
+    let app = app();
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
     serve(listener, app).await.unwrap();
 }
