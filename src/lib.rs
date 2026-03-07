@@ -1,6 +1,6 @@
 use crate::routes::{
     auth::{
-        login::{__path_login, LogInStatus},
+        login::{__path_login, LoginErrorResponse, LoginSuccessResponse},
         register::{__path_register, RegisterStatus},
         status::{__path_status, LoggedInStatus},
     },
@@ -11,7 +11,13 @@ use utoipa::OpenApi;
 #[derive(OpenApi)]
 #[openapi(
     paths(login, register, status, health,),
-    components(schemas(LogInStatus, RegisterStatus, LoggedInStatus, Health,))
+    components(schemas(
+        LoginSuccessResponse,
+        LoginErrorResponse,
+        RegisterStatus,
+        LoggedInStatus,
+        Health,
+    ))
 )]
 pub struct ApiDoc;
 

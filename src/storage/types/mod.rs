@@ -1,4 +1,7 @@
+mod session;
 mod user;
 
-pub use user::NewUser;
+pub use session::LoginRequest;
+pub use session::Session;
+pub use user::RegisterRequest;
 pub use user::User;

@@ -6,15 +6,20 @@ use axum::http::Request;
 use hyper::StatusCode;
 use opengame_api::app::app;
 use opengame_api::storage;
+use opengame_api::storage::types::LoginRequest;
 use serde_json::Value;
 use std::sync::Arc;
 use storage::types::User;
 use tower::ServiceExt;
+use uuid::Uuid;
 
 struct TestStorage;
 
 #[async_trait]
 impl storage::Storage for TestStorage {
+    async fn new_session(&self, _credentials: LoginRequest) -> Result<storage::NewSessionStatus> {
+        Ok(storage::NewSessionStatus::Success(Uuid::new_v4()))
+    }
     async fn new_user(&self, _user: User) -> Result<storage::NewUserStatus> {
         Ok(storage::NewUserStatus::Success)
     }
