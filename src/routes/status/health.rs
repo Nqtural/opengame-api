@@ -1,11 +1,6 @@
 use axum::Json;
-use axum::{Router, routing::get};
 use serde::Serialize;
 use utoipa::ToSchema;
-
-pub fn status() -> Router {
-    Router::new().route("/health", get(health))
-}
 
 #[derive(Serialize, ToSchema)]
 pub struct Health {
