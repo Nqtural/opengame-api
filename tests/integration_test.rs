@@ -17,6 +17,9 @@ struct TestStorage;
 
 #[async_trait]
 impl storage::Storage for TestStorage {
+    async fn delete_session(&self, _bearer: Uuid) -> Result<storage::DeleteSessionStatus> {
+        Ok(storage::DeleteSessionStatus::Success)
+    }
     async fn new_session(&self, _credentials: LoginRequest) -> Result<storage::NewSessionStatus> {
         Ok(storage::NewSessionStatus::Success(Uuid::new_v4()))
     }

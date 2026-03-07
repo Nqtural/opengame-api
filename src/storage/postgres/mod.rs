@@ -1,6 +1,6 @@
 use super::types::{LoginRequest, User};
 use super::{NewUserStatus, Storage};
-use crate::storage::NewSessionStatus;
+use crate::storage::{DeleteSessionStatus, NewSessionStatus};
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use bcrypt::verify;
@@ -25,6 +25,29 @@ impl PostgresDatabase {
 
 #[async_trait]
 impl Storage for PostgresDatabase {
+    async fn delete_session(&self, bearer: Uuid) -> Result<DeleteSessionStatus> {
+        let result = sqlx::query!(
+            r#"
+            DELETE FROM sessions
+            WHERE id = $1
+            "#,
+            bearer,
+        )
+        .execute(&self.pool)
+        .await;
+
+        match result {
+            Ok(res) => {
+                if res.rows_affected() == 0 {
+                    Ok(DeleteSessionStatus::InvalidCredentials)
+                } else {
+                    Ok(DeleteSessionStatus::Success)
+                }
+            }
+            Err(e) => Err(anyhow!(e)),
+        }
+    }
+
     async fn new_session(&self, credentials: LoginRequest) -> Result<NewSessionStatus> {
         let user = sqlx::query!(
             r#"
