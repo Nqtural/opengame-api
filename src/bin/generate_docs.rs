@@ -1,5 +1,5 @@
-use utoipa::OpenApi;
 use opengame_api::ApiDoc;
+use utoipa::OpenApi;
 
 fn main() {
     let openapi = ApiDoc::openapi();

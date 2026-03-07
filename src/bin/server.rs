@@ -1,9 +1,9 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use axum::serve;
-use std::sync::Arc;
-use tokio::net::TcpListener;
 use opengame_api::app::app;
 use opengame_api::storage;
+use std::sync::Arc;
+use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> Result<()> {

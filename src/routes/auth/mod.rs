@@ -1,6 +1,6 @@
+use crate::storage::Storage;
 use axum::{Router, routing::get};
 use std::sync::Arc;
-use crate::storage::Storage;
 
 pub mod login;
 pub mod register;

@@ -1,8 +1,8 @@
-use utoipa::OpenApi;
 use crate::routes::{
-    status::health::{__path_health, Health},
     auth::status::{__path_status, LoggedInStatus},
+    status::health::{__path_health, Health},
 };
+use utoipa::OpenApi;
 
 #[derive(OpenApi)]
 #[openapi(paths(status, health), components(schemas(LoggedInStatus, Health)))]
