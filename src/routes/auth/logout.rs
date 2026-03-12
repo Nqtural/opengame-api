@@ -32,9 +32,9 @@ pub struct LogoutErrorResponse {
         ("bearer_auth" = [])
     ),
     responses(
-        (status = 200, body = LogoutSuccessResponse),
-        (status = 401, body = LogoutErrorResponse),
-        (status = 500, body = LogoutErrorResponse)
+        (status = 200, description = "User logged out successfully", body = LogoutSuccessResponse),
+        (status = 401, description = "Invalid credentials", body = LogoutErrorResponse),
+        (status = 500, description = "Internal server error", body = LogoutErrorResponse)
     )
 )]
 pub async fn logout(
