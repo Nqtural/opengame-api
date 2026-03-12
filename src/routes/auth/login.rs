@@ -30,9 +30,9 @@ pub struct LoginErrorResponse {
     path = "/auth/login",
     request_body = LoginRequest,
     responses(
-        (status = 200, body = LoginSuccessResponse),
-        (status = 401, body = LoginErrorResponse),
-        (status = 500, body = LoginErrorResponse)
+        (status = 200, description="User successfully logged in", body = LoginSuccessResponse),
+        (status = 401, description="Invalid credentials", body = LoginErrorResponse),
+        (status = 500, description="Internal server error", body = LoginErrorResponse)
     )
 )]
 pub async fn login(
