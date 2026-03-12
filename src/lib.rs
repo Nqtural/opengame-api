@@ -7,7 +7,25 @@ use crate::routes::{
     },
     status::health::{__path_health, Health},
 };
-use utoipa::OpenApi;
+use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
+use utoipa::{Modify, OpenApi};
+
+struct SecurityAddon;
+
+impl Modify for SecurityAddon {
+    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+        let components = openapi.components.as_mut().expect("components must exist");
+        components.add_security_scheme(
+            "bearer_auth",
+            SecurityScheme::Http(
+                HttpBuilder::new()
+                    .scheme(HttpAuthScheme::Bearer)
+                    .bearer_format("UUID") // or "UUID" in your case
+                    .build(),
+            ),
+        );
+    }
+}
 
 #[derive(OpenApi)]
 #[openapi(
@@ -21,7 +39,8 @@ use utoipa::OpenApi;
         RegisterErrorResponse,
         LoggedInStatus,
         Health,
-    ))
+    )),
+    modifiers(&SecurityAddon),
 )]
 pub struct ApiDoc;
 
