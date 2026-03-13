@@ -49,7 +49,7 @@ impl Storage for PostgresDatabase {
     }
 
     async fn new_session(&self, credentials: LoginRequest) -> Result<NewSessionStatus> {
-        let user = sqlx::query!(
+        let user = match sqlx::query!(
             r#"
             SELECT id, password_hash
             FROM users
@@ -57,9 +57,12 @@ impl Storage for PostgresDatabase {
             "#,
             credentials.username
         )
-        .fetch_one(&self.pool)
+        .fetch_optional(&self.pool)
         .await
-        .map_err(|e| anyhow!(e))?;
+        .map_err(|e| anyhow!(e))? {
+            Some(user) => user,
+            None => return Ok(NewSessionStatus::InvalidCredentials),
+        };
 
         match verify(&credentials.password, &user.password_hash) {
             Err(e) => return Err(anyhow!("failed to verify password: {e}")),
