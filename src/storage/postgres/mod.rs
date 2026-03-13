@@ -21,6 +21,11 @@ impl PostgresDatabase {
 
         Ok(Self { pool })
     }
+
+    // for tests
+    pub async fn using_pool(pool: Pool<Postgres>) -> Self {
+        Self { pool }
+    }
 }
 
 #[async_trait]
@@ -59,7 +64,8 @@ impl Storage for PostgresDatabase {
         )
         .fetch_optional(&self.pool)
         .await
-        .map_err(|e| anyhow!(e))? {
+        .map_err(|e| anyhow!(e))?
+        {
             Some(user) => user,
             None => return Ok(NewSessionStatus::InvalidCredentials),
         };

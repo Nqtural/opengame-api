@@ -5,11 +5,11 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::response::Response;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use utoipa::ToSchema;
 
-#[derive(Serialize, ToSchema)]
+#[derive(Deserialize, Serialize, ToSchema)]
 pub struct LoginSuccessResponse {
     #[schema(example = true)]
     pub success: bool,

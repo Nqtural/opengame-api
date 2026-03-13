@@ -1,8 +1,6 @@
 use anyhow::Result;
 use async_trait::async_trait;
-use axum::body::Body;
 use axum::body::to_bytes;
-use axum::http::Request;
 use hyper::StatusCode;
 use opengame_api::app::app;
 use opengame_api::storage;
@@ -10,8 +8,10 @@ use opengame_api::storage::types::LoginRequest;
 use serde_json::Value;
 use std::sync::Arc;
 use storage::types::User;
-use tower::ServiceExt;
 use uuid::Uuid;
+
+mod request_helpers;
+use request_helpers::send_request;
 
 struct TestStorage;
 
@@ -31,13 +31,7 @@ impl storage::Storage for TestStorage {
 #[tokio::test]
 async fn health_check_works() -> Result<()> {
     let app = app(Arc::new(TestStorage));
-    let response = app
-        .oneshot(
-            Request::builder()
-                .uri("/status/health")
-                .body(Body::empty())?,
-        )
-        .await?;
+    let response = send_request(&app, "GET", "/status/health", None, None).await?;
 
     assert_eq!(response.status(), StatusCode::OK);
 
