@@ -1,8 +1,9 @@
 use crate::routes::{
+    ErrorResponse,
     auth::{
-        login::{__path_login, LoginErrorResponse, LoginSuccessResponse},
-        logout::{__path_logout, LogoutErrorResponse, LogoutSuccessResponse},
-        register::{__path_register, RegisterErrorResponse, RegisterSuccessResponse},
+        login::{__path_login, LoginSuccessResponse},
+        logout::{__path_logout, LogoutSuccessResponse},
+        register::{__path_register, RegisterSuccessResponse},
         status::{__path_status, LoggedInStatus},
     },
     status::health::{__path_health, Health},
@@ -20,7 +21,7 @@ impl Modify for SecurityAddon {
             SecurityScheme::Http(
                 HttpBuilder::new()
                     .scheme(HttpAuthScheme::Bearer)
-                    .bearer_format("UUID") // or "UUID" in your case
+                    .bearer_format("UUID")
                     .build(),
             ),
         );
@@ -31,12 +32,10 @@ impl Modify for SecurityAddon {
 #[openapi(
     paths(login, logout, register, status, health,),
     components(schemas(
+        ErrorResponse,
         LoginSuccessResponse,
-        LoginErrorResponse,
         LogoutSuccessResponse,
-        LogoutErrorResponse,
         RegisterSuccessResponse,
-        RegisterErrorResponse,
         LoggedInStatus,
         Health,
     )),

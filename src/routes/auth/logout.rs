@@ -1,3 +1,4 @@
+use super::super::ErrorResponse;
 use crate::storage::{DeleteSessionStatus, Storage};
 use axum::Json;
 use axum::extract::State;
@@ -17,13 +18,6 @@ pub struct LogoutSuccessResponse {
     pub success: bool,
 }
 
-#[derive(Serialize, ToSchema)]
-pub struct LogoutErrorResponse {
-    #[schema(example = false)]
-    pub success: bool,
-    pub message: String,
-}
-
 #[axum::debug_handler]
 #[utoipa::path(
     post,
@@ -33,8 +27,8 @@ pub struct LogoutErrorResponse {
     ),
     responses(
         (status = 200, description = "User logged out successfully", body = LogoutSuccessResponse),
-        (status = 401, description = "Invalid credentials", body = LogoutErrorResponse),
-        (status = 500, description = "Internal server error", body = LogoutErrorResponse)
+        (status = 401, description = "Invalid credentials", body = ErrorResponse),
+        (status = 500, description = "Internal server error", body = ErrorResponse)
     )
 )]
 pub async fn logout(
@@ -46,7 +40,7 @@ pub async fn logout(
         Err(_) => {
             return (
                 StatusCode::UNAUTHORIZED,
-                Json(LogoutErrorResponse {
+                Json(ErrorResponse {
                     success: false,
                     message: "Invalid credentials.".to_string(),
                 }),
@@ -64,7 +58,7 @@ pub async fn logout(
 
         Ok(DeleteSessionStatus::InvalidCredentials) => (
             StatusCode::UNAUTHORIZED,
-            Json(LogoutErrorResponse {
+            Json(ErrorResponse {
                 success: false,
                 message: "Invalid credentials.".to_string(),
             }),
@@ -73,7 +67,7 @@ pub async fn logout(
 
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(LogoutErrorResponse {
+            Json(ErrorResponse {
                 success: false,
                 message: format!("Internal server error: {e}."),
             }),
