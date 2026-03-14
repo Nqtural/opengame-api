@@ -1,3 +1,4 @@
+use super::super::ErrorResponse;
 use crate::storage::types::{RegisterRequest, User};
 use crate::storage::{NewUserStatus, Storage};
 use axum::Json;
@@ -17,13 +18,6 @@ pub struct RegisterSuccessResponse {
     success: bool,
 }
 
-#[derive(Serialize, ToSchema)]
-pub struct RegisterErrorResponse {
-    #[schema(example = false)]
-    success: bool,
-    message: String,
-}
-
 #[axum::debug_handler]
 #[utoipa::path(
     post,
@@ -31,8 +25,8 @@ pub struct RegisterErrorResponse {
     request_body = RegisterRequest,
     responses(
         (status = 201, description = "User registered successfully", body = RegisterSuccessResponse),
-        (status = 409, description = "Username taken", body = RegisterErrorResponse),
-        (status = 500, description = "Internal server error", body = RegisterErrorResponse)
+        (status = 409, description = "Username taken", body = ErrorResponse),
+        (status = 500, description = "Internal server error", body = ErrorResponse)
     )
 )]
 pub async fn register(
@@ -44,7 +38,7 @@ pub async fn register(
         Err(e) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(RegisterErrorResponse {
+                Json(ErrorResponse {
                     success: false,
                     message: e.to_string(),
                 }),
@@ -70,7 +64,7 @@ pub async fn register(
                 .into_response(),
             NewUserStatus::AlreadyExists => (
                 StatusCode::CONFLICT,
-                Json(RegisterErrorResponse {
+                Json(ErrorResponse {
                     success: false,
                     message: "username taken".to_string(),
                 }),
@@ -79,7 +73,7 @@ pub async fn register(
         },
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(RegisterErrorResponse {
+            Json(ErrorResponse {
                 success: false,
                 message: e.to_string(),
             }),

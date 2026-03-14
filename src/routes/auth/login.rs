@@ -1,3 +1,4 @@
+use super::super::ErrorResponse;
 use crate::storage::types::LoginRequest;
 use crate::storage::{NewSessionStatus, Storage};
 use axum::Json;
@@ -17,13 +18,6 @@ pub struct LoginSuccessResponse {
     pub bearer: String,
 }
 
-#[derive(Serialize, ToSchema)]
-pub struct LoginErrorResponse {
-    #[schema(example = false)]
-    pub success: bool,
-    pub message: String,
-}
-
 #[axum::debug_handler]
 #[utoipa::path(
     post,
@@ -31,8 +25,8 @@ pub struct LoginErrorResponse {
     request_body = LoginRequest,
     responses(
         (status = 200, description="User successfully logged in", body = LoginSuccessResponse),
-        (status = 401, description="Invalid credentials", body = LoginErrorResponse),
-        (status = 500, description="Internal server error", body = LoginErrorResponse)
+        (status = 401, description="Invalid credentials", body = ErrorResponse),
+        (status = 500, description="Internal server error", body = ErrorResponse)
     )
 )]
 pub async fn login(
@@ -51,7 +45,7 @@ pub async fn login(
 
         Ok(NewSessionStatus::InvalidCredentials) => (
             StatusCode::UNAUTHORIZED,
-            Json(LoginErrorResponse {
+            Json(ErrorResponse {
                 success: false,
                 message: "Invalid credentials.".to_string(),
             }),
@@ -60,7 +54,7 @@ pub async fn login(
 
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(LoginErrorResponse {
+            Json(ErrorResponse {
                 success: false,
                 message: format!("Internal server error: {e}."),
             }),
