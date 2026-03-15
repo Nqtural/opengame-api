@@ -1,6 +1,6 @@
 use super::types::{LoginRequest, User};
 use super::{NewUserStatus, Storage};
-use crate::storage::{DeleteSessionStatus, GetCurrentUserStatus, GetUserStatus, NewSessionStatus};
+use crate::storage::{DeleteAllSessionsStatus, DeleteSessionStatus, GetCurrentUserStatus, GetUserStatus, NewSessionStatus};
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use bcrypt::verify;
@@ -94,6 +94,34 @@ impl Storage for PostgresDatabase {
                 created_at: user.created_at,
             })),
             None => Err(anyhow!("found session for user that does not exist")), // invalid state
+        }
+    }
+
+    async fn delete_all_sessions(&self, bearer: Uuid) -> Result<DeleteAllSessionsStatus> {
+        let user_id = match self.get_user_id(bearer).await? {
+            Some(user_id) => user_id,
+            None => return Ok(DeleteAllSessionsStatus::InvalidCredentials),
+        };
+
+        let result = sqlx::query!(
+            r#"
+            DELETE FROM sessions
+            WHERE user_id = $1
+            "#,
+            user_id,
+        )
+        .execute(&self.pool)
+        .await;
+
+        match result {
+            Ok(res) => {
+                if res.rows_affected() == 0 {
+                    Ok(DeleteAllSessionsStatus::InvalidCredentials)
+                } else {
+                    Ok(DeleteAllSessionsStatus::Success)
+                }
+            }
+            Err(e) => Err(anyhow!(e)),
         }
     }
 

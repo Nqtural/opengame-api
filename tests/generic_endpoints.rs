@@ -23,6 +23,9 @@ impl storage::Storage for TestStorage {
     async fn get_current_user(&self, _bearer: Uuid) -> Result<storage::GetCurrentUserStatus> {
         Ok(storage::GetCurrentUserStatus::InvalidCredentials)
     }
+    async fn delete_all_sessions(&self, _bearer: Uuid) -> Result<storage::DeleteAllSessionsStatus> {
+        Ok(storage::DeleteAllSessionsStatus::Success)
+    }
     async fn delete_session(&self, _bearer: Uuid) -> Result<storage::DeleteSessionStatus> {
         Ok(storage::DeleteSessionStatus::Success)
     }
