@@ -17,6 +17,9 @@ struct TestStorage;
 
 #[async_trait]
 impl storage::Storage for TestStorage {
+    async fn get_user(&self, _username: &str) -> Result<storage::GetUserStatus> {
+        Ok(storage::GetUserStatus::NotFound)
+    }
     async fn get_current_user(&self, _bearer: Uuid) -> Result<storage::GetCurrentUserStatus> {
         Ok(storage::GetCurrentUserStatus::InvalidCredentials)
     }
@@ -28,6 +31,9 @@ impl storage::Storage for TestStorage {
     }
     async fn new_user(&self, _user: User) -> Result<storage::NewUserStatus> {
         Ok(storage::NewUserStatus::Success)
+    }
+    async fn validate_bearer(&self, _bearer: Uuid) -> bool {
+        true
     }
 }
 
