@@ -1,6 +1,6 @@
 use super::types::{LoginRequest, User};
 use super::{NewUserStatus, Storage};
-use crate::storage::{DeleteSessionStatus, GetCurrentUserStatus, NewSessionStatus};
+use crate::storage::{DeleteSessionStatus, GetCurrentUserStatus, GetUserStatus, NewSessionStatus};
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use bcrypt::verify;
@@ -26,27 +26,53 @@ impl PostgresDatabase {
     pub async fn using_pool(pool: Pool<Postgres>) -> Self {
         Self { pool }
     }
-}
 
-#[async_trait]
-impl Storage for PostgresDatabase {
-    async fn get_current_user(&self, bearer: Uuid) -> Result<GetCurrentUserStatus> {
-        let user_id = match sqlx::query!(
+    async fn get_user_id(&self, bearer: Uuid) -> Result<Option<Uuid>> {
+        sqlx::query_scalar!(
             r#"
             SELECT user_id
             FROM sessions
             WHERE id = $1
             "#,
-            bearer,
+            bearer
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| anyhow!(e))
+    }
+}
+
+#[async_trait]
+impl Storage for PostgresDatabase {
+    async fn get_user(&self, username: &str) -> Result<GetUserStatus> {
+        match sqlx::query!(
+            r#"
+            SELECT *
+            FROM users
+            WHERE username = $1
+            "#,
+            username,
         )
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| anyhow!(e))?
         {
+            Some(user) => Ok(GetUserStatus::Success(User {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                password_hash: user.password_hash,
+                created_at: user.created_at,
+            })),
+            None => Ok(GetUserStatus::NotFound),
+        }
+    }
+
+    async fn get_current_user(&self, bearer: Uuid) -> Result<GetCurrentUserStatus> {
+        let user_id = match self.get_user_id(bearer).await? {
             Some(user_id) => user_id,
             None => return Ok(GetCurrentUserStatus::InvalidCredentials),
-        }
-        .user_id;
+        };
 
         match sqlx::query!(
             r#"
@@ -161,6 +187,13 @@ impl Storage for PostgresDatabase {
                 }
                 Err(anyhow!(e))
             }
+        }
+    }
+
+    async fn validate_bearer(&self, bearer: Uuid) -> bool {
+        match self.get_user_id(bearer).await {
+            Ok(result) => result.is_some(),
+            Err(_) => false,
         }
     }
 }
