@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -9,6 +9,12 @@ pub struct RegisterRequest {
     pub email: String,
     pub username: String,
     pub password: String,
+}
+
+#[derive(Serialize, ToSchema)]
+pub struct UserInformation {
+    pub username: String,
+    pub created_at: String,
 }
 
 pub struct User {
