@@ -6,6 +6,7 @@ use http_body_util::BodyExt;
 use opengame_api::routes::auth::login::LoginSuccessResponse;
 use tower::ServiceExt;
 
+#[allow(dead_code)]
 pub async fn extract_bearer(response: Response<Body>) -> Result<String> {
     let body_bytes = response.into_body().collect().await?.to_bytes();
     let body_str = String::from_utf8(body_bytes.to_vec())?;
@@ -31,12 +32,13 @@ pub async fn send_request(
     Ok(response)
 }
 
+#[allow(dead_code)]
 pub async fn login(app: &Router, credentials: &serde_json::Value) -> Result<Response<Body>> {
     let mut headers = HeaderMap::new();
     headers.insert("content-type", HeaderValue::from_static("application/json"));
 
     send_request(
-        &app,
+        app,
         "POST",
         "/auth/login",
         Some(headers),
@@ -45,6 +47,7 @@ pub async fn login(app: &Router, credentials: &serde_json::Value) -> Result<Resp
     .await
 }
 
+#[allow(dead_code)]
 pub async fn logout(app: &Router, bearer: &str) -> Result<Response<Body>> {
     let mut headers = HeaderMap::new();
     headers.insert("content-type", HeaderValue::from_static("application/json"));
@@ -56,12 +59,13 @@ pub async fn logout(app: &Router, bearer: &str) -> Result<Response<Body>> {
     send_request(app, "POST", "/auth/logout", Some(headers), None).await
 }
 
+#[allow(dead_code)]
 pub async fn register(app: &Router, user: &serde_json::Value) -> Result<Response<Body>> {
     let mut headers = HeaderMap::new();
     headers.insert("content-type", HeaderValue::from_static("application/json"));
 
     send_request(
-        &app,
+        app,
         "POST",
         "/auth/register",
         Some(headers),
