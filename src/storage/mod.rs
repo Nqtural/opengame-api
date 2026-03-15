@@ -17,6 +17,11 @@ pub enum GetCurrentUserStatus {
     InvalidCredentials,
 }
 
+pub enum DeleteAllSessionsStatus {
+    Success,
+    InvalidCredentials,
+}
+
 pub enum DeleteSessionStatus {
     Success,
     InvalidCredentials,
@@ -36,6 +41,7 @@ pub enum NewUserStatus {
 pub trait Storage: Send + Sync {
     async fn get_user(&self, username: &str) -> Result<GetUserStatus>;
     async fn get_current_user(&self, bearer: Uuid) -> Result<GetCurrentUserStatus>;
+    async fn delete_all_sessions(&self, bearer: Uuid) -> Result<DeleteAllSessionsStatus>;
     async fn delete_session(&self, bearer: Uuid) -> Result<DeleteSessionStatus>;
     async fn new_session(&self, credentials: LoginRequest) -> Result<NewSessionStatus>;
     async fn new_user(&self, user: User) -> Result<NewUserStatus>;
