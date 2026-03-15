@@ -13,7 +13,7 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 
 #[derive(Serialize, ToSchema)]
-pub struct LogoutSuccessResponse {
+pub struct LogoutAllSuccessResponse {
     #[schema(example = true)]
     pub success: bool,
 }
@@ -26,7 +26,7 @@ pub struct LogoutSuccessResponse {
         ("bearer_auth" = [])
     ),
     responses(
-        (status = 200, description = "User logged out form all devices successfully", body = LogoutSuccessResponse),
+        (status = 200, description = "User logged out form all devices successfully", body = LogoutAllSuccessResponse),
         (status = 401, description = "Invalid credentials", body = ErrorResponse),
         (status = 500, description = "Internal server error", body = ErrorResponse)
     )
@@ -52,7 +52,7 @@ pub async fn logout_all(
     match storage.delete_all_sessions(bearer).await {
         Ok(DeleteAllSessionsStatus::Success) => (
             StatusCode::OK,
-            Json(LogoutSuccessResponse { success: true }),
+            Json(LogoutAllSuccessResponse { success: true }),
         )
             .into_response(),
 

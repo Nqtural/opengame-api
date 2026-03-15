@@ -3,10 +3,15 @@ use crate::routes::{
     auth::{
         login::{__path_login, LoginSuccessResponse},
         logout::{__path_logout, LogoutSuccessResponse},
+        logout_all::{__path_logout_all, LogoutAllSuccessResponse},
         register::{__path_register, RegisterSuccessResponse},
         status::{__path_status, LoggedInStatus},
     },
     status::health::{__path_health, Health},
+    users::{
+        get::{__path_get, GetUserSuccessResponse},
+        get_current::{__path_get_current, GetCurrentUserSuccessResponse},
+    }
 };
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
 use utoipa::{Modify, OpenApi};
@@ -30,11 +35,14 @@ impl Modify for SecurityAddon {
 
 #[derive(OpenApi)]
 #[openapi(
-    paths(login, logout, register, status, health,),
+    paths(get, get_current, login, logout, logout_all, register, status, health,),
     components(schemas(
         ErrorResponse,
+        GetCurrentUserSuccessResponse,
+        GetUserSuccessResponse,
         LoginSuccessResponse,
         LogoutSuccessResponse,
+        LogoutAllSuccessResponse,
         RegisterSuccessResponse,
         LoggedInStatus,
         Health,
